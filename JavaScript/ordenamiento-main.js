@@ -5,6 +5,10 @@ const { createCanvas } = require('canvas');
 
 const TAMANOS = [1_000, 10_000, 100_000, 1_000_000];
 const REPETICIONES = 5;
+const CARPETA_DATOS = "datos";
+const CARPETA_RESULTADOS = "resultados";
+fs.mkdirSync(CARPETA_DATOS, { recursive: true });
+fs.mkdirSync(CARPETA_RESULTADOS, { recursive: true });
 
 const ALGORITMOS = [
     {
@@ -86,7 +90,7 @@ const csv = ["Algoritmo,Lenguaje,Variante,N,T1(ns),T2(ns),T3(ns),T4(ns),T5(ns),P
 for (let n of TAMANOS) {
     console.log("\n=== PROCESANDO TAMAÑO: " + n + " ===");
 
-    const nombreArchivo = n + "-numeros.txt";
+    const nombreArchivo = CARPETA_DATOS + "/" + n + "-numeros.txt";
     if (!fs.existsSync(nombreArchivo)) {
         console.log("Generando archivo faltante: " + nombreArchivo);
         generarArchivoAleatorio(nombreArchivo, n);
@@ -95,10 +99,10 @@ for (let n of TAMANOS) {
     const arrAleatorio = cargarArreglo(nombreArchivo, n);
 
     const arrAscendente = [...arrAleatorio].sort((a, b) => a - b);
-    guardarArreglo(n + "-ascendente.txt", arrAscendente);
+    guardarArreglo(CARPETA_DATOS + "/" + n + "-ascendente.txt", arrAscendente);
 
     const arrDescendente = [...arrAscendente].reverse();
-    guardarArreglo(n + "-descendente.txt", arrDescendente);
+    guardarArreglo(CARPETA_DATOS + "/" + n + "-descendente.txt", arrDescendente);
 
     for (let algoritmo of ALGORITMOS) {
         if (algoritmo.nombre === "InsertionSort" && n >= 100_000) {
@@ -113,7 +117,7 @@ for (let n of TAMANOS) {
     }
 }
 
-fs.writeFileSync("resultados_ordenamiento.csv", csv.join("\n") + "\n");
+fs.writeFileSync(CARPETA_RESULTADOS + "/resultados_ordenamiento.csv", csv.join("\n") + "\n");
 console.log("\nGenerando gráficas PNG...");
 generarGraficas();
 console.log("¡Pruebas y gráficas finalizadas con éxito!");
@@ -191,7 +195,7 @@ function generarGraficas() {
             }))
             .filter(serie => serie.data.length > 0);
 
-        guardarGrafica("grafica_1_crecimiento_js.png", 1000, 700, {
+        guardarGrafica(CARPETA_RESULTADOS + "/grafica_1_crecimiento_js.png", 1000, 700, {
             type: 'line',
             data: { datasets: series },
             options: {
@@ -222,7 +226,7 @@ function generarGraficas() {
                 backgroundColor: COLORES[i % COLORES.length]
             }));
 
-            guardarGrafica("grafica_2_orden_" + size + ".png", 1200, 700, {
+            guardarGrafica(CARPETA_RESULTADOS + "/grafica_2_orden_" + size + ".png", 1200, 700, {
                 type: 'bar',
                 data: { labels: nombres, datasets },
                 options: {

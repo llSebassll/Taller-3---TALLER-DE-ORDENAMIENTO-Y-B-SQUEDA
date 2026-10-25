@@ -22,6 +22,8 @@ public class OrdenamientoMain {
 
     private static final int[] TAMANOS = {1_000, 10_000, 100_000, 1_000_000};
     private static final int REPETICIONES = 5;
+    private static final String CARPETA_DATOS = "datos";
+    private static final String CARPETA_RESULTADOS = "resultados";
     private static final String[] ALGORITMOS = {
             "InsertionSort", "DualPivotQuicksort", "MergeSort", "HeapSort", "RadixSort", "BucketSort"
     };
@@ -46,14 +48,17 @@ public class OrdenamientoMain {
     private static List<Resultado> listaResultados = new ArrayList<>();
 
     public static void main(String[] args) throws IOException {
-        BufferedWriter csvWriter = new BufferedWriter(new FileWriter("resultados_ordenamiento.csv"));
+        new File(CARPETA_DATOS).mkdirs();
+        new File(CARPETA_RESULTADOS).mkdirs();
+
+        BufferedWriter csvWriter = new BufferedWriter(new FileWriter(new File(CARPETA_RESULTADOS, "resultados_ordenamiento.csv")));
         csvWriter.write("Algoritmo,Lenguaje,Variante,N,T1(ns),T2(ns),T3(ns),T4(ns),T5(ns),Promedio(ns),DesviacionEstandar(ns),Estado\n");
 
         for (int n : TAMANOS) {
             System.out.println("\n=== PROCESANDO TAMAÑO: " + n + " ===");
 
             String nombreArchivo = n + "-numeros.txt";
-            File archivoOriginal = new File(nombreArchivo);
+            File archivoOriginal = new File(CARPETA_DATOS, nombreArchivo);
 
             if (!archivoOriginal.exists()) {
                 System.out.println("Generando archivo faltante: " + nombreArchivo);
@@ -181,7 +186,7 @@ public class OrdenamientoMain {
             yAxisLine.setStrictValuesFlag(false);
             xyPlot.setRangeAxis(yAxisLine);
 
-            ChartUtils.saveChartAsPNG(new File("grafica_1_crecimiento_java.png"), lineChart, 1000, 700);
+            ChartUtils.saveChartAsPNG(new File(CARPETA_RESULTADOS, "grafica_1_crecimiento_java.png"), lineChart, 1000, 700);
 
             // 2. Gráficas de Barras por Tamaño (Efecto del orden de entrada)
             int[] tamanosBarras = {1000, 10000, 100000};
@@ -209,7 +214,7 @@ public class OrdenamientoMain {
                 renderer.setDefaultItemLabelGenerator(new StandardCategoryItemLabelGenerator("{2}", NumberFormat.getIntegerInstance()));
                 renderer.setDefaultItemLabelsVisible(true);
 
-                ChartUtils.saveChartAsPNG(new File("grafica_2_orden_" + size + ".png"), barChart, 1200, 700);
+                ChartUtils.saveChartAsPNG(new File(CARPETA_RESULTADOS, "grafica_2_orden_" + size + ".png"), barChart, 1200, 700);
             }
         } catch (Exception e) {
             System.err.println("Error guardando las gráficas: " + e.getMessage());
@@ -236,14 +241,14 @@ public class OrdenamientoMain {
     }
 
     private static int[] cargarArreglo(String nombreArchivo, int n) throws IOException {
-        List<String> lineas = Files.readAllLines(new File(nombreArchivo).toPath());
+        List<String> lineas = Files.readAllLines(new File(CARPETA_DATOS, nombreArchivo).toPath());
         int[] arr = new int[n];
         for (int i = 0; i < n; i++) arr[i] = Integer.parseInt(lineas.get(i));
         return arr;
     }
 
     private static void guardarArreglo(String nombreArchivo, int[] arr) throws IOException {
-        File file = new File(nombreArchivo);
+        File file = new File(CARPETA_DATOS, nombreArchivo);
         if (!file.exists()) {
             try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
                 for (int num : arr) {

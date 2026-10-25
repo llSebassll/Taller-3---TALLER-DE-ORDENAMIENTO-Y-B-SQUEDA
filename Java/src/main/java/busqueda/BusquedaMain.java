@@ -17,6 +17,8 @@ public class BusquedaMain {
 
     private static final int[] TAMANOS = {1_000, 10_000, 100_000, 1_000_000};
     private static final int REPETICIONES = 5;
+    private static final String CARPETA_DATOS = "datos";
+    private static final String CARPETA_RESULTADOS = "resultados";
 
     // Clase interna para guardar resultados y graficar
     static class ResultadoBusqueda {
@@ -34,13 +36,16 @@ public class BusquedaMain {
     private static List<ResultadoBusqueda> resultadosGlobales = new ArrayList<>();
 
     public static void main(String[] args) throws IOException {
+        new File(CARPETA_DATOS).mkdirs();
+        new File(CARPETA_RESULTADOS).mkdirs();
+
         System.out.println("Cargando arreglos ordenados...");
         List<int[]> arreglosAscendentes = new ArrayList<>();
         Random aleatorio = new Random();
 
         // 1. Cargar arreglos ascendentes generados en el Punto 1
         for (int n : TAMANOS) {
-            File archivo = new File(n + "-ascendente.txt");
+            File archivo = new File(CARPETA_DATOS, n + "-ascendente.txt");
             if (!archivo.exists()) {
                 System.out.println("ERROR: No se encontró " + archivo.getName() + ". Ejecuta el OrdenamientoMain primero.");
                 return;
@@ -54,7 +59,7 @@ public class BusquedaMain {
         }
 
         // 2. Generar o cargar 1000 claves (500 presentes, 500 ausentes)
-        File archivoClaves = new File("claves-busqueda.txt");
+        File archivoClaves = new File(CARPETA_DATOS, "claves-busqueda.txt");
         List<Integer> claves = new ArrayList<>();
         if (!archivoClaves.exists()) {
             System.out.println("Generando archivo de 1000 claves...");
@@ -71,7 +76,7 @@ public class BusquedaMain {
         }
 
         // 3. Evaluar rendimiento general (Conjunto de 1000 claves)
-        BufferedWriter csvWriter = new BufferedWriter(new FileWriter("resultados_busqueda.csv"));
+        BufferedWriter csvWriter = new BufferedWriter(new FileWriter(new File(CARPETA_RESULTADOS, "resultados_busqueda.csv")));
         csvWriter.write("Algoritmo,Lenguaje,N,T1(ns),T2(ns),T3(ns),T4(ns),T5(ns),PromedioTotal(ns),PromedioPorBusqueda(ns),Desviacion(ns)\n");
 
         System.out.println("\n--- EVALUACIÓN GENERAL DE BÚSQUEDA ---");
@@ -180,7 +185,7 @@ public class BusquedaMain {
             yAxis.setStrictValuesFlag(false);
             plot.setRangeAxis(yAxis);
 
-            ChartUtils.saveChartAsPNG(new File("grafica_3_busqueda_crecimiento.png"), chart, 1000, 700);
+            ChartUtils.saveChartAsPNG(new File(CARPETA_RESULTADOS, "grafica_3_busqueda_crecimiento.png"), chart, 1000, 700);
         } catch (Exception e) {
             System.err.println("Error generando gráfica: " + e.getMessage());
         }

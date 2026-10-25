@@ -5,6 +5,10 @@ const { createCanvas } = require('canvas');
 
 const TAMANOS = [1_000, 10_000, 100_000, 1_000_000];
 const REPETICIONES = 5;
+const CARPETA_DATOS = "datos";
+const CARPETA_RESULTADOS = "resultados";
+fs.mkdirSync(CARPETA_DATOS, { recursive: true });
+fs.mkdirSync(CARPETA_RESULTADOS, { recursive: true });
 
 const ALGORITMOS = [
     {
@@ -51,7 +55,7 @@ const arreglosAscendentes = [];
 
 // 1. Cargar arreglos ascendentes generados por ordenamiento-main.js
 for (let n of TAMANOS) {
-    const archivo = n + "-ascendente.txt";
+    const archivo = CARPETA_DATOS + "/" + n + "-ascendente.txt";
     if (!fs.existsSync(archivo)) {
         console.log("ERROR: No se encontró " + archivo + ". Ejecuta ordenamiento-main.js primero.");
         process.exit(1);
@@ -65,7 +69,7 @@ for (let n of TAMANOS) {
 }
 
 // 2. Generar o cargar 1000 claves (500 presentes, 500 ausentes)
-const archivoClaves = "claves-busqueda.txt";
+const archivoClaves = CARPETA_DATOS + "/claves-busqueda.txt";
 let claves = [];
 if (!fs.existsSync(archivoClaves)) {
     console.log("Generando archivo de 1000 claves...");
@@ -117,7 +121,7 @@ for (let algoritmo of ALGORITMOS) {
         console.log(algoritmo.nombre + " (N=" + n + ") -> " + promedioPorBusqueda.toFixed(2) + " ns/busqueda");
     }
 }
-fs.writeFileSync("resultados_busqueda.csv", csv.join("\n") + "\n");
+fs.writeFileSync(CARPETA_RESULTADOS + "/resultados_busqueda.csv", csv.join("\n") + "\n");
 
 // 4. Evaluar Posición de la Clave (N = 1.000.000)
 console.log("\n--- ANÁLISIS DE POSICIÓN DE LA CLAVE (N = 1.000.000) ---");
@@ -196,9 +200,9 @@ function generarGraficaCrecimiento() {
             plugins: [backgroundPlugin]
         });
 
-        fs.writeFileSync("grafica_3_busqueda_crecimiento.png", canvas.toBuffer('image/png'));
+        fs.writeFileSync(CARPETA_RESULTADOS + "/grafica_3_busqueda_crecimiento.png", canvas.toBuffer('image/png'));
         chart.destroy();
-        console.log("Gráfico generado: grafica_3_busqueda_crecimiento.png");
+        console.log("Gráfico generado: " + CARPETA_RESULTADOS + "/grafica_3_busqueda_crecimiento.png");
     } catch (e) {
         console.error("Error generando gráfica: " + e.message);
     }

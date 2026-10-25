@@ -2,7 +2,7 @@
   "name": "taller-sort-zamba",
   "version": "1.0.0",
   "description": "",
-  "main": "main.js",
+  "main": "ordenamiento-main.js",
   "scripts": {
     "ordenamiento": "node --expose-gc ordenamiento-main.js",
     "busqueda": "node --expose-gc busqueda-main.js",
